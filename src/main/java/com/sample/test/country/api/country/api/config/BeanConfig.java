@@ -28,7 +28,6 @@ public class BeanConfig {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
-        // ✅ Define converter to safely extract first capital
         Converter<CountryExDto, String> capitalConverter = ctx -> {
             CountryExDto src = ctx.getSource();
             if (src.getCapital() != null && !src.getCapital().isEmpty()) {
@@ -37,17 +36,11 @@ public class BeanConfig {
             return null;
         };
 
-        // ✅ Custom mapping from CountryExDto → Country
         modelMapper.addMappings(new PropertyMap<CountryExDto, Country>() {
             @Override
             protected void configure() {
-                // Map name.common → commonName
                 map().setCommonName(source.getName().getCommon());
-
-                // Use converter for capital
                 using(capitalConverter).map(source).setCapital(null);
-
-                // Direct mappings
                 map().setRegion(source.getRegion());
                 map().setSubregion(source.getSubregion());
                 map().setPopulation((int) source.getPopulation());
